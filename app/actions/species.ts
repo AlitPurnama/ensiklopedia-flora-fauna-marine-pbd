@@ -59,7 +59,10 @@ function parse(formData: FormData) {
       statusId: numOrNull(formData.get("statusId")),
       wilayahId: numOrNull(formData.get("wilayahId")),
       distribusi: jsonOrNull<FeatureCollection>(formData.get("distribusi")),
-      foto: jsonOrNull<string[]>(formData.get("foto")) ?? [],
+      foto: z
+        .array(z.string().startsWith("/uploads/"))
+        .catch([])
+        .parse(jsonOrNull(formData.get("foto"))),
     },
   };
 }

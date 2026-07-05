@@ -4,6 +4,9 @@ import { SignJWT, jwtVerify } from "jose";
 import { timingSafeEqual } from "node:crypto";
 
 const COOKIE = "session";
+if ((process.env.SESSION_SECRET ?? "").length < 32) {
+  throw new Error("SESSION_SECRET must be at least 32 characters");
+}
 const secret = new TextEncoder().encode(process.env.SESSION_SECRET);
 
 function safeEqual(a: string, b: string) {
