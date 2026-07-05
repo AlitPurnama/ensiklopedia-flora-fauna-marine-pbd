@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.env
+public/uploads
+
+# local-only
+.claude/skills/
+handoff.md

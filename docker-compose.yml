@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: pbd
+      POSTGRES_PASSWORD: pbd
+      POSTGRES_DB: ensiklopedia
+    ports:
+      - "5432:5432"
+    volumes:
+      - pbd_pgdata:/var/lib/postgresql/data
+
+volumes:
+  pbd_pgdata:
