@@ -45,3 +45,4 @@ public/uploads
 # local-only
 .claude/skills/
 handoff.md
+skills-lock.json

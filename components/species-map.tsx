@@ -24,6 +24,11 @@ export type MapSpecies = {
 
 // Papua Barat Daya, centered between Raja Ampat and Fakfak.
 const PBD_CENTER: [number, number] = [131.4, -1.4];
+// ponytail: rough PBD province bbox w/ padding (Raja Ampat → Maybrat)
+export const PBD_BOUNDS: [[number, number], [number, number]] = [
+  [128.8, -3.8], // SW corner
+  [134.2, 1.5], // NE corner
+];
 const MOSS = "#3F6B4E"; // maplibre paint needs literal colors, not CSS vars
 
 export function SpeciesMap({
@@ -47,6 +52,8 @@ export function SpeciesMap({
   return (
     <Map
       viewport={{ center, zoom }}
+      maxBounds={PBD_BOUNDS}
+      minZoom={5.5}
       theme={theme}
       styles={styles ?? undefined}
       className={cn("h-full w-full", className)}

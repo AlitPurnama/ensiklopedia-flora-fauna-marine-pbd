@@ -12,6 +12,7 @@ import {
 import { TerraDrawMapLibreGLAdapter } from "terra-draw-maplibre-gl-adapter";
 import { MapPin, Hexagon, MousePointer2, Trash2 } from "lucide-react";
 import { Map } from "@/components/ui/map";
+import { PBD_BOUNDS } from "@/components/species-map";
 import { cn } from "@/lib/utils";
 
 const PBD_CENTER: [number, number] = [131.4, -1.4];
@@ -131,7 +132,12 @@ export function DrawMap({
         </button>
       </div>
       <div className="h-96 overflow-hidden rounded-md border border-border">
-        <Map ref={setMap} viewport={{ center: PBD_CENTER, zoom: 6.4 }} />
+        <Map
+          ref={setMap}
+          viewport={{ center: PBD_CENTER, zoom: 6.4 }}
+          maxBounds={PBD_BOUNDS}
+          minZoom={5.5}
+        />
       </div>
       <p className="text-xs text-muted-foreground">
         Mode <strong>Titik</strong>: klik untuk menandai lokasi. Mode{" "}
