@@ -1,7 +1,9 @@
 import { readFileSync } from "node:fs";
 import { drizzle } from "drizzle-orm/postgres-js";
+import { sql } from "drizzle-orm";
 import postgres from "postgres";
 import { z } from "zod";
+import type { FeatureCollection } from "geojson";
 import { kategori, spesies } from "../lib/db/schema";
 
 process.loadEnvFile(".env");
@@ -34,6 +36,27 @@ function canonWilayah(raw: string): { nama: string; slug: string } {
     if (w.keywords.some((k) => s.includes(k))) return { nama: w.nama, slug: w.slug };
   }
   return { nama: "Papua Barat Daya", slug: "papua-barat-daya" };
+}
+
+// Approximate regency centroids [lng, lat] within the PBD map bounds. The dataset has no
+// per-specimen coordinates, so the map plots one representative point per canonical region —
+// an honest "found in <regency>" pin, not a fake precise GPS fix.
+const WILAYAH_CENTROID: Record<string, [number, number]> = {
+  "raja-ampat": [130.85, -0.5],
+  sorong: [131.29, -0.86],
+  "sorong-selatan": [132.0, -1.5],
+  tambrauw: [132.2, -0.6],
+  maybrat: [132.3, -1.28],
+  "pegunungan-arfak": [133.9, -1.1],
+  "papua-barat-daya": [131.3, -1.2],
+};
+
+function regionPoint(slug: string): FeatureCollection {
+  const [lng, lat] = WILAYAH_CENTROID[slug] ?? WILAYAH_CENTROID["papua-barat-daya"];
+  return {
+    type: "FeatureCollection",
+    features: [{ type: "Feature", properties: {}, geometry: { type: "Point", coordinates: [lng, lat] } }],
+  };
 }
 
 const rowSchema = z.object({
@@ -107,10 +130,12 @@ async function main() {
       };
       const res = await tx
         .insert(spesies)
-        .values({ slug, namaIlmiah: r.namaIlmiah, deskripsi: "", foto: [], ...sheetCols })
+        .values({ slug, namaIlmiah: r.namaIlmiah, deskripsi: "", foto: [], distribusi: regionPoint(w.slug), ...sheetCols })
         .onConflictDoUpdate({
           target: spesies.slug,
-          set: { ...sheetCols, diperbaruiPada: new Date() },
+          // coalesce keeps a human-drawn distribusi if one exists, else backfills the region
+          // point. deskripsi/foto stay untouched (not in the set) so manual edits survive.
+          set: { ...sheetCols, distribusi: sql`coalesce(${spesies.distribusi}, excluded.distribusi)`, diperbaruiPada: new Date() },
         })
         .returning({ createdAt: spesies.dibuatPada, updatedAt: spesies.diperbaruiPada });
       // On a fresh insert both timestamps default to now(); on update only diperbaruiPada moves.
