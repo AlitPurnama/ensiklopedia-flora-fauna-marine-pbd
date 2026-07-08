@@ -38,24 +38,40 @@ function canonWilayah(raw: string): { nama: string; slug: string } {
   return { nama: "Papua Barat Daya", slug: "papua-barat-daya" };
 }
 
-// Approximate regency centroids [lng, lat] within the PBD map bounds. The dataset has no
-// per-specimen coordinates, so the map plots one representative point per canonical region —
-// an honest "found in <regency>" pin, not a fake precise GPS fix.
-const WILAYAH_CENTROID: Record<string, [number, number]> = {
-  "raja-ampat": [130.85, -0.5],
+// Approximate regency land anchors [lng, lat] within the PBD map bounds. The dataset has no
+// per-specimen coordinates, so the map plots a representative point per species near its
+// regency — an honest "found in <regency>" pin, not a fake precise GPS fix. Anchors sit on
+// land (Raja Ampat = Waigeo/Waisai, not open sea).
+const WILAYAH_ANCHOR: Record<string, [number, number]> = {
+  "raja-ampat": [131.03, -0.43], // Waisai, Waigeo island
   sorong: [131.29, -0.86],
-  "sorong-selatan": [132.0, -1.5],
-  tambrauw: [132.2, -0.6],
-  maybrat: [132.3, -1.28],
-  "pegunungan-arfak": [133.9, -1.1],
+  "sorong-selatan": [132.02, -1.44], // Teminabuan
+  tambrauw: [132.2, -0.62], // Fef
+  maybrat: [132.28, -1.27], // Ayamaru
+  "pegunungan-arfak": [133.9, -1.1], // Anggi
   "papua-barat-daya": [131.3, -1.2],
 };
 
-function regionPoint(slug: string): FeatureCollection {
-  const [lng, lat] = WILAYAH_CENTROID[slug] ?? WILAYAH_CENTROID["papua-barat-daya"];
+// Deterministic per-species offset so markers in the same regency spread out instead of
+// stacking on one pin. Hash the slug (FNV-1a) into two values in [-1,1]; same slug -> same
+// point on every re-run, so the import stays idempotent.
+function jitter(slug: string): [number, number] {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < slug.length; i++) {
+    h ^= slug.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  const a = ((h >>> 0) % 1000) / 1000; // 0..1
+  const b = (((h >>> 10) >>> 0) % 1000) / 1000;
+  return [(a * 2 - 1) * 0.12, (b * 2 - 1) * 0.1]; // ~±0.12 lng, ±0.1 lat
+}
+
+function regionPoint(slug: string, speciesSlug: string): FeatureCollection {
+  const [lng, lat] = WILAYAH_ANCHOR[slug] ?? WILAYAH_ANCHOR["papua-barat-daya"];
+  const [dx, dy] = jitter(speciesSlug);
   return {
     type: "FeatureCollection",
-    features: [{ type: "Feature", properties: {}, geometry: { type: "Point", coordinates: [lng, lat] } }],
+    features: [{ type: "Feature", properties: {}, geometry: { type: "Point", coordinates: [lng + dx, lat + dy] } }],
   };
 }
 
@@ -130,7 +146,7 @@ async function main() {
       };
       const res = await tx
         .insert(spesies)
-        .values({ slug, namaIlmiah: r.namaIlmiah, deskripsi: "", foto: [], distribusi: regionPoint(w.slug), ...sheetCols })
+        .values({ slug, namaIlmiah: r.namaIlmiah, deskripsi: "", foto: [], distribusi: regionPoint(w.slug, slug), ...sheetCols })
         .onConflictDoUpdate({
           target: spesies.slug,
           // coalesce keeps a human-drawn distribusi if one exists, else backfills the region
