@@ -38,40 +38,38 @@ function canonWilayah(raw: string): { nama: string; slug: string } {
   return { nama: "Papua Barat Daya", slug: "papua-barat-daya" };
 }
 
-// Approximate regency land anchors [lng, lat] within the PBD map bounds. The dataset has no
-// per-specimen coordinates, so the map plots a representative point per species near its
-// regency — an honest "found in <regency>" pin, not a fake precise GPS fix. Anchors sit on
-// land (Raja Ampat = Waigeo/Waisai, not open sea).
-const WILAYAH_ANCHOR: Record<string, [number, number]> = {
-  "raja-ampat": [131.03, -0.43], // Waisai, Waigeo island
-  sorong: [131.29, -0.86],
-  "sorong-selatan": [132.02, -1.44], // Teminabuan
-  tambrauw: [132.2, -0.62], // Fef
-  maybrat: [132.28, -1.27], // Ayamaru
-  "pegunungan-arfak": [133.9, -1.1], // Anggi
-  "papua-barat-daya": [131.3, -1.2],
+// Per-regency LAND rectangles [[x0,y0],[x1,y1]] (lng/lat), each chosen to sit entirely INSIDE
+// that regency's main landmass. The dataset has no per-specimen coordinates, so the map plots a
+// representative point per species — an honest "found in <regency>" pin, not a fake GPS fix.
+// A point anchor + symmetric jitter used to straddle the coast (Waisai, Sorong city) and drop
+// pins in the sea; sampling inside a fully-on-land box keeps every pin dry while still spreading
+// them out. Raja Ampat plots on Waigeo (its main island), not per-island.
+const WILAYAH_RECT: Record<string, [[number, number], [number, number]]> = {
+  "raja-ampat": [[130.92, -0.32], [131.15, -0.12]], // core Waigeo interior (off Waisai bay & W bays)
+  sorong: [[131.3, -1.02], [131.62, -0.85]], // mainland E of the city toward Aimas/Klamono
+  "sorong-selatan": [[131.75, -1.6], [132.35, -1.3]], // inland around Teminabuan
+  tambrauw: [[131.95, -0.95], [132.55, -0.62]], // mainland S of the N coast
+  maybrat: [[132.05, -1.45], [132.55, -1.12]], // inland lake district
+  "pegunungan-arfak": [[133.62, -1.28], [134.05, -0.98]], // inland mountains
+  "papua-barat-daya": [[131.55, -1.5], [132.15, -1.15]], // Bird's-Head mainland interior (fallback)
 };
 
-// Deterministic per-species offset so markers in the same regency spread out instead of
-// stacking on one pin. Hash the slug (FNV-1a) into two values in [-1,1]; same slug -> same
-// point on every re-run, so the import stays idempotent.
-function jitter(slug: string): [number, number] {
+function regionPoint(slug: string, speciesSlug: string): FeatureCollection {
+  const [[x0, y0], [x1, y1]] = WILAYAH_RECT[slug] ?? WILAYAH_RECT["papua-barat-daya"];
+  // Deterministic uniform sample inside the box: two FNV-1a-derived values in [0,1], seeded by
+  // the species slug -> same slug yields the same point on every re-run (idempotent import).
   let h = 0x811c9dc5;
-  for (let i = 0; i < slug.length; i++) {
-    h ^= slug.charCodeAt(i);
+  for (let i = 0; i < speciesSlug.length; i++) {
+    h ^= speciesSlug.charCodeAt(i);
     h = Math.imul(h, 0x01000193);
   }
-  const a = ((h >>> 0) % 1000) / 1000; // 0..1
-  const b = (((h >>> 10) >>> 0) % 1000) / 1000;
-  return [(a * 2 - 1) * 0.12, (b * 2 - 1) * 0.1]; // ~±0.12 lng, ±0.1 lat
-}
-
-function regionPoint(slug: string, speciesSlug: string): FeatureCollection {
-  const [lng, lat] = WILAYAH_ANCHOR[slug] ?? WILAYAH_ANCHOR["papua-barat-daya"];
-  const [dx, dy] = jitter(speciesSlug);
+  const u = ((h >>> 0) % 1000) / 1000;
+  const v = (((h >>> 10) >>> 0) % 1000) / 1000;
+  const lng = x0 + u * (x1 - x0);
+  const lat = y0 + v * (y1 - y0);
   return {
     type: "FeatureCollection",
-    features: [{ type: "Feature", properties: {}, geometry: { type: "Point", coordinates: [lng + dx, lat + dy] } }],
+    features: [{ type: "Feature", properties: {}, geometry: { type: "Point", coordinates: [lng, lat] } }],
   };
 }
 
