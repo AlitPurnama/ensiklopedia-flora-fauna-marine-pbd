@@ -90,16 +90,6 @@
     "foto": "Buka Foto (Offline)"
   },
   {
-    "namaIlmiah": "Astrapia nigra",
-    "namaLokal": "Astrapia Arfak",
-    "kerajaan": "Fauna",
-    "famili": "Paradisaeidae",
-    "statusKonservasi": "Risiko Rendah",
-    "wilayah": "Pegunungan Arfak",
-    "habitat": "Hutan sub-alpin",
-    "foto": "Buka Foto (Offline)"
-  },
-  {
     "namaIlmiah": "Parotia sefilata",
     "namaLokal": "Parotia Arfak",
     "kerajaan": "Fauna",
@@ -860,16 +850,6 @@
     "foto": "Buka Foto (Offline)"
   },
   {
-    "namaIlmiah": "Araucaria cunninghamii",
-    "namaLokal": "Pinus Papua / Hoop Pine",
-    "kerajaan": "Flora",
-    "famili": "Araucariaceae",
-    "statusKonservasi": "Risiko Rendah",
-    "wilayah": "Hutan Pegunungan Arfak",
-    "habitat": "Lereng pegunungan",
-    "foto": "Buka Foto (Offline)"
-  },
-  {
     "namaIlmiah": "Alstonia beatricis",
     "namaLokal": "Pule Waigeo",
     "kerajaan": "Flora",
@@ -1020,16 +1000,6 @@
     "foto": "Buka Foto (Offline)"
   },
   {
-    "namaIlmiah": "Melanotaenia arfakensis",
-    "namaLokal": "Ikan Pelangi Arfak",
-    "kerajaan": "Fauna",
-    "famili": "Melanotaeniidae",
-    "statusKonservasi": "Rentan",
-    "wilayah": "Sungai Prafi & Arfak",
-    "habitat": "Sungai berarus cepat",
-    "foto": "Buka Foto (Offline)"
-  },
-  {
     "namaIlmiah": "Melanotaenia fredericki",
     "namaLokal": "Ikan Pelangi Sorong",
     "kerajaan": "Fauna",
@@ -1140,16 +1110,6 @@
     "foto": "Buka Foto (Offline)"
   },
   {
-    "namaIlmiah": "Melipotes gymnops",
-    "namaLokal": "Melipotes Arfak",
-    "kerajaan": "Fauna",
-    "famili": "Meliphagidae",
-    "statusKonservasi": "Risiko Rendah",
-    "wilayah": "Pegunungan Arfak",
-    "habitat": "Hutan perbukitan",
-    "foto": "Buka Foto (Offline)"
-  },
-  {
     "namaIlmiah": "Philemon novaeguineae",
     "namaLokal": "Cikukua Tanduk",
     "kerajaan": "Fauna",
@@ -1217,16 +1177,6 @@
     "statusKonservasi": "Risiko Rendah",
     "wilayah": "Kepala Burung",
     "habitat": "Pohon berlubang di hutan primer",
-    "foto": "Buka Foto (Offline)"
-  },
-  {
-    "namaIlmiah": "Nyctimene cyclotis",
-    "namaLokal": "Kelelawar Hidung-tabung Telinga-bundar",
-    "kerajaan": "Fauna",
-    "famili": "Pteropodidae",
-    "statusKonservasi": "Kurang Data",
-    "wilayah": "Pegunungan Arfak & Semenanjung",
-    "habitat": "Hutan pegunungan basah",
     "foto": "Buka Foto (Offline)"
   },
   {

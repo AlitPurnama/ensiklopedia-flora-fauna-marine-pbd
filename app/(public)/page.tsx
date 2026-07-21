@@ -79,9 +79,9 @@ export default async function HomePage() {
             Atlas Ekologi Papua Barat Daya
           </h1>
           <p className="text-pretty text-muted-foreground">
-            Repositori digital keanekaragaman hayati Kepala Burung—dari
-            cendrawasih merah hingga pala fakfak—terdokumentasi sebagai
-            spesimen beserta lokasi persebarannya. Pilih wilayah atau kategori
+            Repositori digital keanekaragaman hayati Kepala Burung. Spesies
+            seperti cendrawasih merah dan pala fakfak didata sebagai spesimen
+            lengkap dengan lokasi persebarannya. Pilih wilayah atau kategori
             untuk mulai menjelajah.
           </p>
         </div>
