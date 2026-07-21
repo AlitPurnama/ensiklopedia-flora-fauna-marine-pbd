@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Tentang — Ensiklopedia Flora & Fauna PBD",
+  title: "Tentang Proyek | Ensiklopedia Flora & Fauna PBD",
 };
 
 export default function TentangPage() {
@@ -12,9 +12,9 @@ export default function TentangPage() {
       </h1>
       <p className="mt-6 text-lg leading-8 text-muted-foreground">
         Ensiklopedia Flora &amp; Fauna Papua Barat Daya adalah katalog terbuka
-        keanekaragaman hayati kawasan, memadukan basis data taksonomi dengan
-        peta sebaran interaktif. Tujuannya mendokumentasikan kekayaan spesies
-        endemik — dari cendrawasih Raja Ampat hingga pala Fakfak — dalam satu
+        keanekaragaman hayati kawasan ini, memadukan basis data taksonomi
+        dengan peta sebaran interaktif. Tujuannya mendokumentasikan spesies
+        endemik, dari cendrawasih Raja Ampat sampai pala Fakfak, dalam satu
         rujukan yang mudah diakses.
       </p>
 
@@ -37,13 +37,27 @@ export default function TentangPage() {
 
       <Section title="Kredit">
         <p>
-          Disusun sebagai proyek etnografi keanekaragaman hayati Papua Barat
-          Daya. Peta menggunakan MapLibre dengan ubin dasar Carto.
+          Disusun oleh Kelompok 10 sebagai bagian dari proyek Etnografi Papua
+          Berbasis Teknologi, mendokumentasikan keanekaragaman hayati Papua
+          Barat Daya. Peta menggunakan MapLibre dengan basemap dari Carto.
         </p>
+        <ul className="mt-2 list-none space-y-1 pl-0">
+          {PENYUSUN.map((p) => (
+            <li key={p.nim}>
+              {p.nama} ({p.nim})
+            </li>
+          ))}
+        </ul>
       </Section>
     </div>
   );
 }
+
+const PENYUSUN = [
+  { nama: "Alit Purnama", nim: "202455202080" },
+  { nama: "Della Ernalita", nim: "202455202046" },
+  { nama: "Irawan Lira", nim: "202355202022" },
+];
 
 function Section({
   title,
