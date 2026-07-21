@@ -112,6 +112,8 @@ export default async function HomePage() {
               namaIlmiah: s.namaIlmiah,
               namaLokal: s.namaLokal,
               kerajaan: s.kerajaan,
+              kelompokSlug: s.kelompokSlug,
+              kelompokNama: s.kelompokNama,
               distribusi: s.distribusi,
             }))}
             showShapes
@@ -248,7 +250,7 @@ function FeaturedCard({ s }: { s: SpesiesView }) {
           {s.namaIlmiah}
         </div>
         <dl className="mt-auto space-y-2 border-t border-border pt-4">
-          <FactRow label="Status" value={s.statusNama ?? "—"} />
+          <FactRow label="Status" value={s.statusNama ?? "Kurang Data"} />
           <FactRow label="Wilayah" value={s.wilayahNama ?? "—"} />
           <FactRow label="No." value={String(s.id).padStart(4, "0")} mono />
         </dl>

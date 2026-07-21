@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { Leaf, Bird } from "lucide-react";
 import { getSpesiesBySlug } from "@/lib/queries";
 import { representativePoint } from "@/lib/geo";
-import { StatusBadge } from "@/components/status-badge";
+import { StatusBadge, STATUS_TONE } from "@/components/status-badge";
+import { cn } from "@/lib/utils";
 import { SpeciesMap } from "@/components/species-map";
 
 export default async function DetailPage({
@@ -43,6 +44,20 @@ export default async function DetailPage({
         <StatusBadge nama={s.statusNama} slug={s.statusSlug} />
       </header>
 
+      {s.statusAlasan && (
+        <section className="mt-6">
+          <SectionTitle>Status Konservasi</SectionTitle>
+          <div
+            className={cn(
+              "rounded-lg border px-4 py-3 text-sm leading-relaxed",
+              STATUS_TONE[s.statusSlug ?? "kurang-data"] ?? "border-border bg-muted text-muted-foreground",
+            )}
+          >
+            <span className="font-semibold">{s.statusNama}</span> karena {s.statusAlasan}
+          </div>
+        </section>
+      )}
+
       {/* Asymmetric editorial split: prose 5 cols, imagery 7 cols. */}
       <div className="mt-10 grid gap-10 lg:grid-cols-12">
         <div className="space-y-8 lg:col-span-5">
@@ -67,8 +82,8 @@ export default async function DetailPage({
             <SectionTitle>Taksonomi</SectionTitle>
             <dl className="divide-y divide-border rounded-lg border border-border bg-secondary/60 text-sm shadow-soft">
               <Row label="Kerajaan" value={s.kerajaan} mono />
+              <Row label="Kelompok" value={s.kelompokNama} />
               <Row label="Famili" value={s.familiNama} />
-              <Row label="Status" value={s.statusNama} />
               <Row label="Wilayah" value={s.wilayahNama} />
             </dl>
           </section>
@@ -89,12 +104,15 @@ export default async function DetailPage({
                 namaIlmiah: s.namaIlmiah,
                 namaLokal: s.namaLokal,
                 kerajaan: s.kerajaan,
+                kelompokSlug: s.kelompokSlug,
+                kelompokNama: s.kelompokNama,
                 distribusi: s.distribusi,
               },
             ]}
             center={center}
             zoom={9}
             showShapes
+            legend={false}
           />
         </div>
       </section>
@@ -116,13 +134,13 @@ function Row({
   mono,
 }: {
   label: string;
-  value: string | null;
+  value: React.ReactNode;
   mono?: boolean;
 }) {
   return (
-    <div className="flex items-center justify-between gap-3 px-3 py-2">
-      <dt className="text-muted-foreground">{label}</dt>
-      <dd className={mono ? "font-mono text-xs" : "font-medium"}>
+    <div className="flex items-start justify-between gap-3 px-3 py-2">
+      <dt className="pt-px text-muted-foreground">{label}</dt>
+      <dd className={cn("text-left", mono ? "font-mono text-xs" : "font-medium")}>
         {value ?? "—"}
       </dd>
     </div>

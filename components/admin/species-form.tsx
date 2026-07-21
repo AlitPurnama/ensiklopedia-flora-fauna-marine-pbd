@@ -124,6 +124,15 @@ export function SpeciesForm({
           </Field>
         </div>
 
+        <Field label="Alasan Status Konservasi">
+          <Textarea
+            name="statusAlasan"
+            defaultValue={initial?.statusAlasan ?? ""}
+            rows={2}
+            placeholder="mis. perburuan liar dan hilangnya habitat (opsional)"
+          />
+        </Field>
+
         <Field label="Habitat">
           <Input name="habitat" defaultValue={initial?.habitat} placeholder="Hutan hujan dataran rendah" />
         </Field>

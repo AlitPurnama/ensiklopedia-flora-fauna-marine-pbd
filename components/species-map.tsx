@@ -12,13 +12,17 @@ import {
 } from "@/components/ui/map";
 import { representativePoint } from "@/lib/geo";
 import { useThemedMapStyle } from "@/lib/map-style";
+import { kelasDariKelompok, warnaKelas } from "@/lib/kelompok-warna";
 import { cn } from "@/lib/utils";
+import { MapLegend } from "@/components/map-legend";
 
 export type MapSpecies = {
   slug: string;
   namaIlmiah: string;
   namaLokal: string;
   kerajaan: "flora" | "fauna";
+  kelompokSlug: string | null;
+  kelompokNama: string | null;
   distribusi: FeatureCollection | null;
 };
 
@@ -36,6 +40,7 @@ export function SpeciesMap({
   center = PBD_CENTER,
   zoom = 6.4,
   showShapes = false,
+  legend = true,
   className,
   // App is light-only (no theme switcher); pin the basemap so it can't drift to
   // OS-dark while the page stays paper. Thread a real value when dark mode lands.
@@ -45,10 +50,22 @@ export function SpeciesMap({
   center?: [number, number];
   zoom?: number;
   showShapes?: boolean;
+  legend?: boolean;
   className?: string;
   theme?: "light" | "dark";
 }) {
   const styles = useThemedMapStyle();
+  const legendItems: { key: string; nama: string; warna: string }[] = [];
+  if (legend) {
+    const seen = new Set<string>();
+    for (const s of species) {
+      const kelas = kelasDariKelompok(s.kelompokSlug);
+      if (kelas && !seen.has(kelas)) {
+        seen.add(kelas);
+        legendItems.push({ key: kelas, nama: kelas, warna: warnaKelas(kelas) });
+      }
+    }
+  }
   return (
     <Map
       viewport={{ center, zoom }}
@@ -59,6 +76,7 @@ export function SpeciesMap({
       className={cn("h-full w-full", className)}
     >
       <MapControls position="bottom-right" showZoom showFullscreen />
+      {legend && <MapLegend items={legendItems} position="bottom-left" />}
       {showShapes &&
         species.map(
           (s) =>
@@ -78,10 +96,8 @@ export function SpeciesMap({
           <MapMarker key={s.slug} longitude={p[0]} latitude={p[1]}>
             <MarkerContent>
               <span
-                className={cn(
-                  "block size-3.5 rounded-full border-2 border-background shadow",
-                  s.kerajaan === "flora" ? "bg-primary" : "bg-plume",
-                )}
+                className="block size-3.5 rounded-full border-2 border-background shadow"
+                style={{ backgroundColor: warnaKelas(kelasDariKelompok(s.kelompokSlug)) }}
               />
             </MarkerContent>
             <MarkerPopup closeButton>
@@ -91,6 +107,11 @@ export function SpeciesMap({
               <p className="mt-0.5 text-xs text-muted-foreground">
                 {s.namaLokal}
               </p>
+              {s.kelompokNama && (
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  {s.kelompokNama}
+                </p>
+              )}
               <Link
                 href={`/katalog/${s.slug}`}
                 className="mt-2 inline-block text-xs font-medium text-primary hover:underline"
