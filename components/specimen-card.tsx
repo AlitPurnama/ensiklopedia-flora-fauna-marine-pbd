@@ -38,6 +38,11 @@ export function SpecimenCard({ s }: { s: SpesiesView }) {
 
         <div className="mt-3 flex flex-wrap items-center gap-2">
           <StatusBadge nama={s.statusNama} slug={s.statusSlug} />
+          {s.kelompokNama && (
+            <span className="rounded-full bg-sage/25 px-2 py-0.5 text-[11px] font-medium text-primary">
+              {s.kelompokNama}
+            </span>
+          )}
           {s.wilayahNama && (
             <span className="text-xs text-muted-foreground">
               {s.wilayahNama}

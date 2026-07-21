@@ -9,7 +9,7 @@ import { verifySession } from "@/lib/auth";
 export type KategoriState = { error?: string; ok?: boolean };
 
 const schema = z.object({
-  tipe: z.enum(["ordo", "famili", "status_konservasi", "wilayah"]),
+  tipe: z.enum(["ordo", "famili", "status_konservasi", "wilayah", "kelompok"]),
   nama: z.string().trim().min(1, "Nama wajib diisi"),
 });
 
@@ -80,7 +80,28 @@ export async function deleteKategori(id: number): Promise<KategoriState> {
   if (n > 0) {
     return { error: `Tidak bisa dihapus: dipakai ${n} spesies.` };
   }
+  const [{ m }] = await db
+    .select({ m: sql<number>`count(*)::int` })
+    .from(kategori)
+    .where(eq(kategori.parentId, id));
+  if (m > 0) {
+    return { error: `Tidak bisa dihapus: dipakai ${m} famili.` };
+  }
   await db.delete(kategori).where(eq(kategori.id, id));
   revalidatePath("/admin/kategori");
+  return { ok: true };
+}
+
+export async function setFamiliKelompok(
+  id: number,
+  kelompokId: number | null,
+): Promise<KategoriState> {
+  if (!(await guard())) return { error: "Tidak terautentikasi." };
+  await db
+    .update(kategori)
+    .set({ parentId: kelompokId })
+    .where(eq(kategori.id, id));
+  revalidatePath("/admin/kategori");
+  revalidatePath("/katalog");
   return { ok: true };
 }
