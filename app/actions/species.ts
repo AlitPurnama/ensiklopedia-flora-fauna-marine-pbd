@@ -16,6 +16,11 @@ const schema = z.object({
   kerajaan: z.enum(["flora", "fauna"]),
   deskripsi: z.string().trim().default(""),
   habitat: z.string().trim().default(""),
+  statusAlasan: z
+    .string()
+    .trim()
+    .optional()
+    .transform((v) => (v ? v : null)),
 });
 
 function slugify(s: string) {
@@ -47,6 +52,7 @@ function parse(formData: FormData) {
     kerajaan: formData.get("kerajaan"),
     deskripsi: formData.get("deskripsi") ?? "",
     habitat: formData.get("habitat") ?? "",
+    statusAlasan: formData.get("statusAlasan") ?? "",
   });
   if (!base.success) {
     return { error: base.error.issues[0]?.message ?? "Data tidak valid" };

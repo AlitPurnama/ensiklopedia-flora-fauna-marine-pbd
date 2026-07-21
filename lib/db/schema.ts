@@ -6,6 +6,7 @@ import {
   jsonb,
   timestamp,
   pgEnum,
+  type AnyPgColumn,
 } from "drizzle-orm/pg-core";
 import type { FeatureCollection } from "geojson";
 
@@ -15,6 +16,7 @@ export const kategoriTipe = pgEnum("kategori_tipe", [
   "famili",
   "status_konservasi",
   "wilayah",
+  "kelompok",
 ]);
 
 export const kerajaan = pgEnum("kerajaan", ["flora", "fauna"]);
@@ -24,6 +26,8 @@ export const kategori = pgTable("kategori", {
   tipe: kategoriTipe("tipe").notNull(),
   nama: text("nama").notNull(),
   slug: text("slug").notNull(),
+  // Only meaningful when tipe='famili': points at a tipe='kelompok' row.
+  parentId: integer("parent_id").references((): AnyPgColumn => kategori.id),
 });
 
 export const spesies = pgTable("spesies", {
@@ -38,6 +42,8 @@ export const spesies = pgTable("spesies", {
   wilayahId: integer("wilayah_id").references(() => kategori.id),
   deskripsi: text("deskripsi").notNull().default(""),
   habitat: text("habitat").notNull().default(""),
+  // Optional: why this species has its statusId. Filled in by admins over time.
+  statusAlasan: text("status_alasan"),
   // GeoJSON FeatureCollection: points + polygons drawn in the admin map.
   distribusi: jsonb("distribusi").$type<FeatureCollection>(),
   foto: jsonb("foto").$type<string[]>().notNull().default([]),

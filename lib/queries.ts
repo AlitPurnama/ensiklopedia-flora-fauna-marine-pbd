@@ -7,6 +7,7 @@ import type { KategoriTipe } from "./db";
 const famili = alias(kategori, "famili");
 const status = alias(kategori, "status");
 const wilayah = alias(kategori, "wilayah");
+const kelompok = alias(kategori, "kelompok");
 
 const selection = {
   id: spesies.id,
@@ -20,8 +21,11 @@ const selection = {
   foto: spesies.foto,
   familiNama: famili.nama,
   familiSlug: famili.slug,
+  kelompokNama: kelompok.nama,
+  kelompokSlug: kelompok.slug,
   statusNama: status.nama,
   statusSlug: status.slug,
+  statusAlasan: spesies.statusAlasan,
   wilayahNama: wilayah.nama,
   wilayahSlug: wilayah.slug,
 };
@@ -33,6 +37,7 @@ function baseQuery() {
     .select(selection)
     .from(spesies)
     .leftJoin(famili, eq(spesies.familiId, famili.id))
+    .leftJoin(kelompok, eq(famili.parentId, kelompok.id))
     .leftJoin(status, eq(spesies.statusId, status.id))
     .leftJoin(wilayah, eq(spesies.wilayahId, wilayah.id));
 }
@@ -41,6 +46,7 @@ export type SpesiesFilter = {
   q?: string;
   kerajaan?: string;
   famili?: string;
+  kelompok?: string;
   status?: string;
   wilayah?: string;
 };
@@ -54,6 +60,7 @@ export async function listSpesies(filter: SpesiesFilter = {}) {
       ? eq(spesies.kerajaan, filter.kerajaan)
       : undefined,
     filter.famili ? eq(famili.slug, filter.famili) : undefined,
+    filter.kelompok ? eq(kelompok.slug, filter.kelompok) : undefined,
     filter.status ? eq(status.slug, filter.status) : undefined,
     filter.wilayah ? eq(wilayah.slug, filter.wilayah) : undefined,
   );

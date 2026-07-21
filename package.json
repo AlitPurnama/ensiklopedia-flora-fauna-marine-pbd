@@ -9,6 +9,7 @@
     "lint": "eslint",
     "db:push": "drizzle-kit push",
     "db:seed": "tsx lib/db/seed.ts",
+    "db:import": "tsx scripts/import-species.ts",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {

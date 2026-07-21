@@ -46,3 +46,6 @@ public/uploads
 .claude/skills/
 handoff.md
 skills-lock.json
+
+# graphify generated outputs
+graphify-out/

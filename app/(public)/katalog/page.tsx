@@ -25,7 +25,7 @@ export default async function KatalogPage({
   const filter: SpesiesFilter = {
     q: one(sp.q),
     kerajaan: one(sp.kerajaan),
-    famili: one(sp.famili),
+    kelompok: one(sp.kelompok),
     status: one(sp.status),
     wilayah: one(sp.wilayah),
   };
@@ -64,8 +64,8 @@ async function SpeciesGrid({ filter }: { filter: SpesiesFilter }) {
 }
 
 async function FilterRail({ filter }: { filter: SpesiesFilter }) {
-  const [famili, status, wilayah] = await Promise.all([
-    getKategoriByTipe("famili"),
+  const [kelompok, status, wilayah] = await Promise.all([
+    getKategoriByTipe("kelompok"),
     getKategoriByTipe("status_konservasi"),
     getKategoriByTipe("wilayah"),
   ]);
@@ -92,10 +92,10 @@ async function FilterRail({ filter }: { filter: SpesiesFilter }) {
         ]}
       />
       <FilterSelect
-        label="Famili"
-        name="famili"
-        value={filter.famili}
-        options={famili}
+        label="Kelompok"
+        name="kelompok"
+        value={filter.kelompok}
+        options={kelompok}
       />
       <FilterSelect
         label="Status Konservasi"
